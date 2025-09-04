@@ -12,7 +12,7 @@ export const App = () => {
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <Routes>
-            <Route path="/Flight-Search-System" element={<SearchBar />} />
+            <Route path="/" element={<SearchBar />} />
           </Routes>
         </BrowserRouter>
       </QueryClientProvider>
