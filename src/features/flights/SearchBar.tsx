@@ -1,6 +1,5 @@
-import { type ChangeEvent } from 'react'
+import { type ChangeEvent, useState } from 'react'
 import { useFlightStore } from './store.ts'
-// import { searchFlights } from './features/flights/flightService.ts'
 import ClientBanner from './components/SearchBar/ClientBanner.tsx'
 import FlightTypeSelect from './components/SearchBar/FlightTypeSelect.tsx'
 import { Checkbox } from '../../shared/components/Checkbox.tsx'
@@ -11,6 +10,10 @@ import DateSelector from './components/SearchBar/DateSelect.tsx'
 import PassengerClassSelect from './components/SearchBar/PassengerClassSelect.tsx'
 import type { FlightClass } from './types.ts'
 import { useSyncFlightStoreWithUrl } from './hooks/useSyncFlightStoreWithUrl.ts'
+import { getTickets, useAirportSearch } from './hooks/useSearchTickets.ts'
+import type { Ticket } from './mocks/flightSearch.ts'
+import { useQueryClient } from '@tanstack/react-query'
+import { Tickets } from './components/SearchBar/Tickets.tsx'
 
 export const classSelectorOptions = [
   { label: 'Economy', value: 'economy' },
@@ -19,15 +22,20 @@ export const classSelectorOptions = [
 ]
 
 function SearchBar() {
-  // const [results, setResults] = useState<any[]>([])
-  const { setState, directOnly, loading, flightClass } = useFlightStore()
+  const [results, setResults] = useState<Ticket[]>([])
+  const { setState, directOnly, flightClass } = useFlightStore()
   useSyncFlightStoreWithUrl()
+  const queryClient = useQueryClient()
+  const { isLoading } = useAirportSearch()
 
   const handleSearch = async () => {
-    setState({ loading: true })
-    // const flights = await searchFlights(useFlightStore.getState())
-    // setResults(flights)
-    // setLoading(false)
+    const state = useFlightStore.getState()
+    const result = await queryClient.fetchQuery({
+      queryKey: ['tickets', state],
+      queryFn: () => getTickets(state),
+      staleTime: 5 * 60 * 1000,
+    })
+    setResults(result)
   }
 
   const onClassChange = (e: ChangeEvent<HTMLSelectElement>) => {
@@ -56,18 +64,21 @@ function SearchBar() {
             }
           />
         </div>
-        <div className="flex gap-5 border-b border-gray-200 pb-5 justify-center align-center">
-          <LocationSelect />
+        <div className="flex items-end gap-4 border-b border-gray-200 pb-5">
+          <div className="min-w-[400px]">
+            <LocationSelect />
+          </div>
           <DateSelector />
           <PassengerClassSelect />
           <Button
             onClick={handleSearch}
-            disabled={loading}
-            text={loading ? 'Searching...' : 'Search'}
+            disabled={isLoading}
+            text={isLoading ? 'Searching...' : 'Search'}
             color="blue"
             variant="submit"
           />
         </div>
+        {results.length > 0 && <Tickets results={results} />}
       </div>
     </>
   )

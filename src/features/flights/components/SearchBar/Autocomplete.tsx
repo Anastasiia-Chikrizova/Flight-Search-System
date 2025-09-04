@@ -1,8 +1,9 @@
 import { Combobox } from '@headlessui/react'
-import { type ChangeEvent, useState } from 'react'
+import { type ChangeEvent, Fragment, useEffect, useState } from 'react'
 import { useAirportSearch } from '../../hooks/useAirportSearch.ts'
 import { getIcon } from './helpers/GetIcon.tsx'
 import type { Airport, Location } from '../../types.ts'
+import { useFlightStore } from '../../store.ts'
 
 interface LocationComboboxProps {
   label: string
@@ -11,84 +12,105 @@ interface LocationComboboxProps {
 
 export default function LocationCombobox({
   label,
-  // direction,
+  direction,
 }: LocationComboboxProps) {
-  const [selected, setSelected] = useState<
-    Location | Airport | undefined | null
-  >(undefined)
+  const { setState, origin, destination } = useFlightStore()
+  const [selected, setSelected] = useState<string>(
+    direction === 'origin' ? origin : destination
+  )
 
   const [term, setTerm] = useState('')
-  // const { setState } = useFlightStore()
+
   const { data } = useAirportSearch(term)
+
+  useEffect(() => {
+    setSelected(direction === 'origin' ? origin : destination)
+  }, [direction, origin, destination])
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const q = event.target.value
-    // setState({ [direction]: q })
     setTerm(q)
   }
 
+  const onSelect = (selected: Airport | Location) => {
+    const newDirection =
+      selected?.short_name || selected?.airport_code || selected?.title || ''
+    setSelected(newDirection)
+    setState({
+      [direction]: newDirection,
+    })
+  }
+
   return (
-    <div className="w-full max-w-md mx-auto">
-      <Combobox value={selected} onChange={setSelected}>
+    <div>
+      <Combobox value={selected} onChange={onSelect as any}>
         <div className="relative">
-          <label className="text-xs text-yellow-900 tracking-wide font-semibold uppercase mb-1">
+          <label className="block text-xs text-yellow-900 tracking-wide font-semibold uppercase mb-1">
             {label}
           </label>
           <Combobox.Input
-            className="text-gray-800 text-lg font-medium bg-transparent focus:outline-none"
-            displayValue={(item: Location | Airport) =>
-              item.type === 'airport' ? item.title : item.full_name
-            }
+            className=" text-gray-900 text-m  bg-transparent focus:outline-none placeholder:text-gray-400 min-w-[100px]"
+            displayValue={(item: string) => item}
             onChange={handleChange}
+            placeholder="Flying from"
           />
-          <Combobox.Options className="absolute z-10 mt-1 max-h-80 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black/5">
-            {data?.locations?.map((loc: Location) => (
-              <>
-                <Combobox.Option
-                  key={loc.kgmid}
-                  value={loc}
-                  className={({ focus }) =>
-                    `cursor-pointer select-none px-4 py-2 flex items-start gap-2 ${focus ? 'bg-gray-100' : ''}`
-                  }
-                >
-                  <div className="mt-0.5">{getIcon(loc.type)}</div>
-                  <div className="flex flex-col text-left">
-                    <span className="text-gray-900 font-medium">
-                      {loc.full_name}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      {loc.description}
-                    </span>
-                  </div>
-                </Combobox.Option>
-
-                {loc?.airports?.map((airport: Airport) => (
+          {data?.locations?.length > 0 && (
+            <Combobox.Options className="absolute z-10 mt-2 max-h-96 w-full overflow-auto rounded-md bg-white py-1 text-sm shadow-lg ring-1 ring-black/5 min-w-[240px]">
+              {data.locations.map((loc: Location) => (
+                <Fragment key={loc.kgmid}>
                   <Combobox.Option
-                    key={airport.airport_code}
-                    value={airport}
+                    value={loc}
                     className={({ focus }) =>
-                      `cursor-pointer select-none px-8 py-2 flex items-start gap-2 ${focus ? 'bg-gray-50' : ''}`
+                      `cursor-pointer select-none px-4 py-2 flex items-start gap-3 ${
+                        focus ? 'bg-gray-100' : ''
+                      }`
                     }
                   >
-                    <div className="mt-0.5">{getIcon('airport')}</div>
+                    <div className="mt-0.5 text-gray-500">
+                      {getIcon(loc.type)}
+                    </div>
                     <div className="flex flex-col text-left">
                       <span className="text-gray-900 font-medium">
-                        {airport.title}{' '}
-                        <span className="text-gray-500 text-sm">
-                          {airport.airport_code}
-                        </span>
+                        {loc.full_name}
                       </span>
-                      {airport.distance && (
-                        <span className="text-xs text-gray-500">
-                          {airport.distance} to destination
-                        </span>
-                      )}
+                      <span className="text-xs text-gray-500">
+                        {loc.description}
+                      </span>
                     </div>
                   </Combobox.Option>
-                ))}
-              </>
-            ))}
-          </Combobox.Options>
+
+                  {loc?.airports?.map((airport: Airport) => (
+                    <Combobox.Option
+                      key={airport.airport_code}
+                      value={airport}
+                      className={({ focus }) =>
+                        `cursor-pointer select-none px-10 py-2 flex items-start gap-3 ${
+                          focus ? 'bg-gray-50' : ''
+                        }`
+                      }
+                    >
+                      <div className="mt-0.5 text-gray-500">
+                        {getIcon('airport')}
+                      </div>
+                      <div className="flex flex-col text-left">
+                        <span className="text-gray-900 font-medium">
+                          {airport.title}{' '}
+                          <span className="text-gray-500 text-sm">
+                            {airport.airport_code}
+                          </span>
+                        </span>
+                        {airport.distance && (
+                          <span className="text-xs text-gray-500">
+                            {airport.distance} to destination
+                          </span>
+                        )}
+                      </div>
+                    </Combobox.Option>
+                  ))}
+                </Fragment>
+              ))}
+            </Combobox.Options>
+          )}
         </div>
       </Combobox>
     </div>

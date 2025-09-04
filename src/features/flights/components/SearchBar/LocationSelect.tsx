@@ -13,7 +13,7 @@ export const LocationSelect = () => {
   }
 
   return (
-    <div className="grid grid-cols-3 items-end gap-4 w-full">
+    <div className="grid grid-cols-3 items-end gap-5 w-full">
       <div className="flex flex-col">
         <LocationCombobox label=" Flying From" direction={'origin'} />
       </div>

@@ -9,8 +9,8 @@ export const useAirportSearch = (
   const debouncedTerm = useDebouncedValue(term, delay)
 
   return useQuery({
-    queryKey: ['airports'],
-    queryFn: () => getAirport(term),
+    queryKey: ['airports', debouncedTerm],
+    queryFn: () => getAirport(debouncedTerm),
     enabled: enabled && !!debouncedTerm && term.length > 1,
     staleTime: 1000 * 60 * 5,
   })

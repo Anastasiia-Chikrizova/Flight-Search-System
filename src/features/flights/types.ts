@@ -17,8 +17,6 @@ export type State = {
   flightClass: FlightClass
   passengers: PassengerCounts
   directOnly: boolean
-  loading: boolean
-  passengersSummary: string
 }
 
 export type Actions = {
@@ -32,6 +30,8 @@ export interface Airport {
   title: string
   city: string
   distance?: string
+  full_name: string
+  short_name: string
 }
 
 export interface Location {
@@ -41,4 +41,6 @@ export interface Location {
   short_name: string
   description: string
   airports?: Airport[]
+  airport_code: string
+  title: string
 }

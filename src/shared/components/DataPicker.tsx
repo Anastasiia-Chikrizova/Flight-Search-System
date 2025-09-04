@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
 import { DayPicker } from 'react-day-picker'
 import 'react-day-picker/dist/style.css'
 
@@ -20,7 +20,7 @@ export default function DatePicker({
   align = 'left',
   disabled,
 }: Props) {
-  const selected = date ? new Date(date) : undefined
+  const selected = date ? parseISO(date) : undefined
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
@@ -63,7 +63,7 @@ export default function DatePicker({
             selected={selected}
             onSelect={(date) => {
               if (date) {
-                onChange(date.toISOString().split('T')[0])
+                onChange(format(date, 'yyyy-MM-dd'))
                 setOpen(false)
               }
             }}
