@@ -25,7 +25,7 @@ A modern web application for flight ticket search and booking built with React a
 ## Installation
 ``` bash
 # Clone repository
-git clone <repository-url>
+git clone https://github.com/Anastasiia-Chikrizova/Flight-Search-System
 cd Flight-Search-System
 
 # Install dependencies
