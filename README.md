@@ -38,7 +38,5 @@ npm start
 - `npm start` - Run development server
 - `npm run build` - Build for production
 - `npm run lint` - Lint and format code
-- `npm run deploy` - Deploy to GitHub Pages
 
-## Deployment
-The application is configured for GitHub Pages deployment and will be available at: https://anastasiia-chikrizova.github.io/Flight-Search-System/
+
