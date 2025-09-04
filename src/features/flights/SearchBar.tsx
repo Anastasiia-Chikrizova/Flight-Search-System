@@ -1,13 +1,16 @@
 import { type ChangeEvent } from 'react'
-import { type FlightClass, useFlightStore } from './store.ts'
+import { useFlightStore } from './store.ts'
 // import { searchFlights } from './features/flights/flightService.ts'
-import ClientBanner from '../../components/SearchBar/ClientBanner.tsx'
-import FlightTypeSelector from '../../components/SearchBar/FlightTypeSelector.tsx'
+import ClientBanner from './components/SearchBar/ClientBanner.tsx'
+import FlightTypeSelect from './components/SearchBar/FlightTypeSelect.tsx'
 import { Checkbox } from '../../shared/components/Checkbox.tsx'
-import MultiCityForm from '../../components/SearchBar/MultiCityForm.tsx'
-import { FlyingDetailsPanel } from '../../components/SearchBar/FlyingDetailsPanel.tsx'
 import { Button } from '../../shared/components/Button.tsx'
 import Select from '../../shared/components/Select.tsx'
+import { LocationSelect } from './components/SearchBar/LocationSelect.tsx'
+import DateSelector from './components/SearchBar/DateSelect.tsx'
+import PassengerClassSelect from './components/SearchBar/PassengerClassSelect.tsx'
+import type { FlightClass } from './types.ts'
+import { useSyncFlightStoreWithUrl } from './hooks/useSyncFlightStoreWithUrl.ts'
 
 export const classSelectorOptions = [
   { label: 'Economy', value: 'economy' },
@@ -17,8 +20,8 @@ export const classSelectorOptions = [
 
 function SearchBar() {
   // const [results, setResults] = useState<any[]>([])
-  const { setState, directOnly, flightType, loading, flightClass } =
-    useFlightStore()
+  const { setState, directOnly, loading, flightClass } = useFlightStore()
+  useSyncFlightStoreWithUrl()
 
   const handleSearch = async () => {
     setState({ loading: true })
@@ -36,7 +39,7 @@ function SearchBar() {
       <div className="max-w-6xl mx-auto mt-10 p-6 rounded-xl shadow-xl bg-white space-y-6 border border-gray-200">
         <ClientBanner />
         <div className="flex gap-10 mb-10">
-          <FlightTypeSelector />
+          <FlightTypeSelect />
           <div className="border-l border-gray-300 mr-20 pl-5">
             <Select
               onChange={onClassChange}
@@ -53,22 +56,18 @@ function SearchBar() {
             }
           />
         </div>
-        <>
-          {flightType === 'multi-city' ? (
-            <MultiCityForm handleSearch={handleSearch} />
-          ) : (
-            <div className="flex gap-5 border-b border-gray-200 pb-5 justify-center align-center">
-              <FlyingDetailsPanel index={0} />
-              <Button
-                onClick={handleSearch}
-                disabled={loading}
-                text={loading ? 'Searching...' : 'Search'}
-                color="blue"
-                variant="submit"
-              />
-            </div>
-          )}
-        </>
+        <div className="flex gap-5 border-b border-gray-200 pb-5 justify-center align-center">
+          <LocationSelect />
+          <DateSelector />
+          <PassengerClassSelect />
+          <Button
+            onClick={handleSearch}
+            disabled={loading}
+            text={loading ? 'Searching...' : 'Search'}
+            color="blue"
+            variant="submit"
+          />
+        </div>
       </div>
     </>
   )

@@ -1,19 +1,15 @@
-import DatePicker from '../../shared/components/DataPicker.tsx'
-import { useFlightStore } from '../../features/flights/store.ts'
+import DatePicker from '../../../../shared/components/DataPicker.tsx'
+import { useFlightStore } from '../../store.ts'
 
-interface DateSelectorProps {
-  idx: number
-}
-
-export default function DateSelector({ idx }: DateSelectorProps) {
-  const { segments, updateSegment, flightType } = useFlightStore()
+export default function DateSelect() {
+  const { departureDate, returnDate, flightType, setState } = useFlightStore()
 
   const onReturnDateChange = (date: string) => {
-    updateSegment(idx, { returnDate: date })
+    setState({ returnDate: date })
   }
 
   const onDepartureDateChange = (date: string) => {
-    updateSegment(idx, { departureDate: date })
+    setState({ departureDate: date })
   }
 
   return (
@@ -21,7 +17,7 @@ export default function DateSelector({ idx }: DateSelectorProps) {
       <div className="flex flex-col ject-center items-start">
         <DatePicker
           label="Departure"
-          date={segments[idx].departureDate}
+          date={departureDate}
           onChange={onDepartureDateChange}
         />
       </div>
@@ -31,7 +27,7 @@ export default function DateSelector({ idx }: DateSelectorProps) {
       <div className="flex flex-col  items-start">
         <DatePicker
           label="Arrival"
-          date={segments[idx].returnDate}
+          date={returnDate}
           onChange={onReturnDateChange}
           disabled={flightType === 'one-way'}
         />

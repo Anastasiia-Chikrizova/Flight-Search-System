@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect, type ChangeEvent } from 'react'
-import { type FlightClass, useFlightStore } from '../../features/flights/store'
-import Select from '../../shared/components/Select.tsx'
-import { classSelectorOptions } from '../../features/flights/SearchBar.tsx'
+import { useFlightStore } from '../../store.ts'
+import Select from '../../../../shared/components/Select.tsx'
+import { classSelectorOptions } from '../../SearchBar.tsx'
+import type { FlightClass } from '../../types.ts'
 
 const classLabels: Record<string, string> = {
   economy: 'economy',
@@ -9,18 +10,13 @@ const classLabels: Record<string, string> = {
   first: 'first',
 }
 
-export default function PassengerClassSelector() {
+export default function PassengerClassSelect() {
   const { flightClass, passengers, setState } = useFlightStore()
 
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
-  const {
-    adults = 1,
-    children = 0,
-    infants = 0,
-    infantsWithSeat = 0,
-  } = passengers || {}
+  const { adults, children, infants } = passengers
 
   const onClassChange = (e: ChangeEvent<HTMLSelectElement>) => {
     setState({ flightClass: e?.target?.value as FlightClass })
@@ -41,10 +37,6 @@ export default function PassengerClassSelector() {
     if (adults) parts.push(`${adults} Adult${adults > 1 ? 's' : ''}`)
     if (children) parts.push(`${children} Child${children > 1 ? 'ren' : ''}`)
     if (infants) parts.push(`${infants} Infant${infants > 1 ? 's' : ''}`)
-    if (infantsWithSeat)
-      parts.push(
-        `${infantsWithSeat} Infant${infantsWithSeat > 1 ? 's' : ''} w/ seat`
-      )
     return parts.join(', ') + `, ${classLabels[flightClass]}`
   }
 
@@ -100,7 +92,6 @@ export default function PassengerClassSelector() {
           {group('Adults', 'Age 12+', 'adults')}
           {group('Children', 'Age 2–11', 'children')}
           {group('Infants', 'Under 2 years', 'infants')}
-          {group('Infants with Seat', 'Under 2 years', 'infantsWithSeat')}
 
           <div className="flex flex-col pt-2 border-t border-gray-100">
             <label className="text-sm text-gray-700 font-medium mb-1">

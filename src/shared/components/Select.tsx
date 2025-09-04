@@ -20,7 +20,9 @@ export default function Select({
         onChange={onChange}
       >
         {options.map((option: { label: string; value: string }) => (
-          <option value={option.value}>{option.label}</option>
+          <option value={option.value} key={option.value}>
+            {option.label}
+          </option>
         ))}
       </select>
       <ChevronDown className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />

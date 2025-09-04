@@ -1,22 +1,20 @@
-import { useFlightStore } from '../../features/flights/store'
+import { useFlightStore } from '../../store.ts'
 
-const options = ['round-trip', 'one-way', 'multi-city'] as const
+const options = ['round-trip', 'one-way'] as const
 
-export default function FlightTypeSelector() {
-  const { flightType, setState } = useFlightStore()
-
-  const renderLabel = (type: string) => {
-    switch (type) {
-      case 'round-trip':
-        return 'Round-trip'
-      case 'one-way':
-        return 'One way'
-      case 'multi-city':
-        return 'Multi-city'
-      default:
-        return type
-    }
+const renderLabel = (type: string) => {
+  switch (type) {
+    case 'round-trip':
+      return 'Round-trip'
+    case 'one-way':
+      return 'One way'
+    default:
+      return type
   }
+}
+
+export default function FlightTypeSelect() {
+  const { flightType, setState } = useFlightStore()
 
   return (
     <div className="flex gap-6 text-sm font-medium text-gray-600">
