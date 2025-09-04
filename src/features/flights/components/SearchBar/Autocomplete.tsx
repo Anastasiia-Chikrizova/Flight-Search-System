@@ -1,6 +1,5 @@
 import { Combobox } from '@headlessui/react'
 import { type ChangeEvent, useState } from 'react'
-import { useFlightStore } from '../../store.ts'
 import { useAirportSearch } from '../../hooks/useAirportSearch.ts'
 import { getIcon } from './helpers/GetIcon.tsx'
 import type { Airport, Location } from '../../types.ts'
@@ -12,15 +11,15 @@ interface LocationComboboxProps {
 
 export default function LocationCombobox({
   label,
-  direction,
+  // direction,
 }: LocationComboboxProps) {
   const [selected, setSelected] = useState<
     Location | Airport | undefined | null
   >(undefined)
 
   const [term, setTerm] = useState('')
-  const { setState } = useFlightStore()
-  const { data, isLoading, error } = useAirportSearch(term)
+  // const { setState } = useFlightStore()
+  const { data } = useAirportSearch(term)
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const q = event.target.value
